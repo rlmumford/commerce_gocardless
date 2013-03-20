@@ -24,8 +24,8 @@ function commerce_gocardless_libraries_info() {
     'download url' => 'https://github.com/gocardless/gocardless-php/zipball/v0.3.3',
     'version arguments' => array(
       'file' => 'CHANGELOG.md',
-      'pattern' => '@version\s+([0-9a-zA-Z\.-]+)@',
-      'lines' => 1,
+      'pattern' => '@## ([0-9\.]+)@',
+      'lines' => 2,
     ),
     'path' => 'lib',
     'files' => array(
@@ -146,40 +146,46 @@ function commerce_gocardless_redirect_form($form, &$form_state, $order, $payment
   $order_amount = number_format($amount, 2, '.', '');
 
   // Include the library
-  $gocardless_php = libraries_load('gocardless-php');
 
-  if ($payment_method['settings']['sandbox'] = TRUE) {
-    // Use the sandbox environment for testing
-    GoCardless::$environment = 'sandbox';
-  }
+  if (($library = libraries_load('gocardless-php')) && !empty($library['loaded'])) {
+    if ($payment_method['settings']['sandbox'] = TRUE) {
+      // Use the sandbox environment for testing
+      GoCardless::$environment = 'sandbox';
+    }
 
-  // Set config vars
-  $account_details = array(
-    'app_id'        => $payment_method['settings']['app_id'],
-    'app_secret'    => $payment_method['settings']['app_secret'],
-    'merchant_id'   => $payment_method['settings']['merchant_id'],
-    'access_token'  => $payment_method['settings']['access_token'],
-  );
-
-  // Initialize GoCardless
-  GoCardless::set_account_details($account_details);
-
-  $payment_details = array(
-    'amount'  => $order_amount,
-    'name'    => 'Order ' . $order->order_id,
-    'redirect_uri' => url('checkout/' . $order->order_id . '/payment/return/' . $order->data['payment_redirect_key'], array('absolute'=>TRUE)),
-  );
-
-  $url = GoCardless::new_bill_url($payment_details);
-
-  drupal_goto($url);
-  // Display the link
-  $form['link'] = array(
-    '#type' => 'markup',
-    '#markup' => '<a href="'.$url.'">New subscription</a>',
+    // Set config vars
+    $account_details = array(
+      'app_id'        => $payment_method['settings']['app_id'],
+      'app_secret'    => $payment_method['settings']['app_secret'],
+      'merchant_id'   => $payment_method['settings']['merchant_id'],
+      'access_token'  => $payment_method['settings']['access_token'],
     );
 
-  return $form;
+    // Initialize GoCardless
+    GoCardless::set_account_details($account_details);
+
+    $payment_details = array(
+      'amount'  => $order_amount,
+      'name'    => 'Order ' . $order->order_id,
+      'redirect_uri' => url('checkout/' . $order->order_id . '/payment/return/' . $order->data['payment_redirect_key'], array('absolute'=>TRUE)),
+    );
+
+    $url = GoCardless::new_bill_url($payment_details);
+
+    drupal_goto($url);
+    // Display the link
+    $form['link'] = array(
+      '#type' => 'markup',
+      '#markup' => '<a href="'.$url.'">New subscription</a>',
+    );
+
+    return $form;
+  }
+  else {
+    drupal_set_message(t('GoCardless Library not loaded'), 'error');
+  }
+
+
 }
 
 function commerce_gocardless_redirect_form_submit($order, $payment_method) {
