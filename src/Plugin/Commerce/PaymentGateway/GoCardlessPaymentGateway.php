@@ -84,7 +84,6 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
     }
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -132,8 +131,6 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
     $payment_method->save();
   }
 
-
-
   /**
    * {@inheritdoc}
    */
@@ -143,7 +140,6 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
     // Delete the local entity.
     $payment_method->delete();
   }
-
 
   /**
    * {@inheritdoc}
@@ -172,7 +168,6 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
   public function getWebhookSecret() {
     return isset($this->configuration['webhook_secret']) ? $this->configuration['webhook_secret'] : '';
   }
-
 
   private function createGoCardlessPayment(PaymentInterface $payment, $mandate_id) {
     /** @var \Drupal\commerce_price\RounderInterface $rounder */
@@ -204,7 +199,6 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
     return $gc_payment->id;
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -224,7 +218,6 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
     }
     return '';
   }
-
 
   /**
    * Asserts that the payment amount currency is GBP.

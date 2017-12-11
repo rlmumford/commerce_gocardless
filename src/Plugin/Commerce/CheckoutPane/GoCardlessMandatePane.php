@@ -31,12 +31,10 @@ use GoCardlessPro\Core\Exception\GoCardlessProException;
  */
 class GoCardlessMandatePane extends CheckoutPaneBase {
 
-
   /**
    * {@inheritdoc}
    */
   public function buildPaneForm(array $pane_form, FormStateInterface $form_state, array &$complete_form) {
-
     // A payment gateway must be set before this pane is used.
     if ($this->order->get('payment_gateway')->isEmpty()) {
       drupal_set_message($this->t('No payment gateway selected.'), 'error');
@@ -100,7 +98,6 @@ class GoCardlessMandatePane extends CheckoutPaneBase {
     }
   }
 
-
   /**
    * Redirects to a previous checkout step on error.
    *
@@ -113,7 +110,6 @@ class GoCardlessMandatePane extends CheckoutPaneBase {
     ], ['absolute' => TRUE]);
     throw new NeedsRedirectException($url->toString());
   }
-
 
   /**
    * Takes a profile object and email address, and returns an array suitable
