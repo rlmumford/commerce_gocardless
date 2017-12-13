@@ -25,7 +25,6 @@ class WebhookController extends ControllerBase {
   const PAYMENT_ACTION_FAILED = 'failed';
   const PAYMENT_ACTION_PAID_OUT = 'paid_out';
 
-
   /**
    * @var \Drupal\commerce_payment\PaymentStorageInterface
    */
@@ -35,7 +34,6 @@ class WebhookController extends ControllerBase {
    * @var \Drupal\Core\Logger\LoggerChannelInterface
    */
   protected $logger;
-
 
   /**
    * Constructor.
@@ -235,7 +233,8 @@ class WebhookController extends ControllerBase {
    * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
    * @param array $event
    *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events
-   */  private function handlePaymentFailedEvent(PaymentInterface $payment, $event) {
+   */
+  private function handlePaymentFailedEvent(PaymentInterface $payment, $event) {
     // transitions aren't used by payment API (see commerce_payment.workflows.yml)
     $payment->setState('voided');
     $payment->save();

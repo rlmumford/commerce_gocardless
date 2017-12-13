@@ -83,7 +83,8 @@ class GoCardlessMandatePane extends CheckoutPaneBase {
       $redirectFlow = $client->redirectFlows()->create(['params' => $params]);
       throw new NeedsRedirectException($redirectFlow->redirect_url);
 
-    } catch (GoCardlessProException $e) {
+    }
+    catch (GoCardlessProException $e) {
       \Drupal::logger('commerce_gocardless')->error($e->getMessage());
 
       // If this happens we are left with a payment method that doesn't

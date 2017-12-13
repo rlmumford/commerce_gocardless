@@ -35,7 +35,6 @@ class MandateConfirmationController extends ControllerBase {
    *   went wrong.
    */
   public function confirmFlow(OrderInterface $commerce_order, Request $request) {
-
     // We are given a flow ID from which we can obtain the correct user.
     $redirect_flow_id = $request->get('redirect_flow_id');
     if (!$redirect_flow_id) {
@@ -48,7 +47,6 @@ class MandateConfirmationController extends ControllerBase {
     $session_token = $request->getSession()->getId();
 
     try {
-
       /** @var GoCardlessPaymentGatewayInterface $payment_gateway */
       $payment_gateway = $commerce_order->payment_gateway->entity->getPlugin();
       $redirectFlow = $payment_gateway
@@ -71,13 +69,15 @@ class MandateConfirmationController extends ControllerBase {
       $payment_method->setExpiresTime(strtotime('now + 10 years'));
       $payment_method->save();
 
-    } catch (InvalidApiUsageException $e) {
+    }
+    catch (InvalidApiUsageException $e) {
       // This is probably because the redirect_flow_id parameter was wrong.
       // We have not been able to complete the flow, so there is no point
       // proceeding with the order.
       throw new NotFoundHttpException();
 
-    } catch (InvalidStateException $e) {
+    }
+    catch (InvalidStateException $e) {
       // The flow cannot be completed because it is not in the correct state.
       // We cannot update it, and therefore cannot obtain a mandate ID.
       // This won't be a problem if the flow has already been validated, we
