@@ -1,13 +1,23 @@
-# GoCardless integration with Drupal Commerce
+INTRODUCTION
+------------
 
-This module provides support for commerce payments using GoCardless one off
-payments.
+The Commerce GoCardless module provides support for commerce payments using
+GoCardless one off payments.
 
 
-## Setup
+REQUIREMENTS
+------------
 
-The following steps illustrate setting up a GoCardless sandbox account and this Drupal
-module to work together:
+This module requires the following modules:
+
+ * Commerce (https://drupal.org/project/commerce)
+
+
+INSTALLATION
+------------
+
+The following steps illustrate setting up a GoCardless sandbox account and this
+Drupal module to work together:
 
 _GoCardless:_
 
@@ -51,15 +61,14 @@ _GoCardless:_
 11. Use the secret defined in step 7 above here.
 
 
-
-
-## Implementation details
+IMPLEMENTATION DETAILS
+----------------------
 
 ### Payment method type
 
 There is a custom payment method type - _GoCardless one-off payment_
-(`commerce_gocardless_oneoff`). Payments of this type hold the corresponding GoCardless
-mandate ID in the _remote ID_ field.
+(`commerce_gocardless_oneoff`). Payments of this type hold the corresponding
+GoCardless mandate ID in the _remote ID_ field.
 
 ### Payment gateway
 
