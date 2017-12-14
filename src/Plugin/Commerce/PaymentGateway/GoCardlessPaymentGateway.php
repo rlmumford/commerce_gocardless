@@ -111,9 +111,9 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
     // We need to be able to identify this payment later, so store the GC id.
     $payment->setRemoteId($gc_payment_id);
 
-    // Update the payment status to pending - GoCardless will call the webhook
-    // once it can be confirmed.
-    $payment->setState('pending');
+    // Update the payment status to pending_capture - GoCardless will call the
+    // webhook once it can be confirmed.
+    $payment->setState('pending_capture');
     $payment->save();
   }
 
