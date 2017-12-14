@@ -241,7 +241,10 @@ class WebhookController extends ControllerBase {
    */
   private function handlePaymentFailedEvent(PaymentInterface $payment, $event) {
     // Transitions aren't used by payment API (see commerce_payment.workflows.yml)
-    $payment->setState('voided');
+    // TODO: 'authorization_voided' isn't quite the right state, as it'll be
+    // the capture that has failed rather than authorization. Add this state
+    // to Commerce.
+    $payment->setState('authorization_voided');
     $payment->save();
     $this->logger->info('Order #@order_id: payment @gc_payment_id failed.', [
       '@gc_payment_id' => $payment->getRemoteId(),
