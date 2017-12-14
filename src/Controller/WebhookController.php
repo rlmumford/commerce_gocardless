@@ -236,6 +236,7 @@ class WebhookController extends ControllerBase {
    * Changes the payment state to voided.
    *
    * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
+   *   The payment entity.
    * @param array $event
    *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events.
    */
