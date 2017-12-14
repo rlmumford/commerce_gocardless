@@ -45,7 +45,7 @@ class MandateConfirmationController extends ControllerBase {
     $session_token = $request->getSession()->getId();
 
     try {
-      /** @var GoCardlessPaymentGatewayInterface $payment_gateway */
+      /** @var \Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway\GoCardlessPaymentGatewayInterface $payment_gateway */
       $payment_gateway = $commerce_order->payment_gateway->entity->getPlugin();
       $redirectFlow = $payment_gateway
         ->createGoCardlessClient()
@@ -60,10 +60,10 @@ class MandateConfirmationController extends ControllerBase {
       $customer_id = $redirectFlow->links->customer;
       $mandate_id = $redirectFlow->links->mandate;
 
-      /** @var PaymentMethodInterface $payment_method */
+      /** @var \Drupal\commerce_payment\Entity\PaymentMethodInterface $payment_method */
       $payment_method = $commerce_order->payment_method->entity;
       $payment_method->setRemoteId($mandate_id);
-      // workaround for https://www.drupal.org/node/2882136 - for now we must have an expires time
+      // Workaround for https://www.drupal.org/node/2882136 - for now we must have an expires time.
       $payment_method->setExpiresTime(strtotime('now + 10 years'));
       $payment_method->save();
 

@@ -14,7 +14,7 @@ use GoCardlessPro\Core\Exception\GoCardlessProException;
  *
  * The user will be redirected if both of the following are true:
  *   - the payment method is of type "commerce_gocardless_oneoff"
- *   - there is no mandate set in the payment method's "Remote ID" property
+ *   - there is no mandate set in the payment method's "Remote ID" property.
  *
  * If no GoCardless intervention is required, this pane does nothing.
  *
@@ -39,10 +39,10 @@ class GoCardlessMandatePane extends CheckoutPaneBase {
       $this->redirectToPreviousStep();
     }
 
-    /** @var PaymentMethodInterface $payment_method */
+    /** @var \Drupal\commerce_payment\Entity\PaymentMethodInterface $payment_method */
     $payment_method = $this->order->payment_method->entity;
 
-    // Do nothing if this order does not involve GoCardless
+    // Do nothing if this order does not involve GoCardless.
     if (empty($payment_method) || $payment_method->bundle() !== 'commerce_gocardless_oneoff') {
       return $pane_form;
     }
@@ -52,7 +52,7 @@ class GoCardlessMandatePane extends CheckoutPaneBase {
       return $pane_form;
     }
 
-    /** @var GoCardlessPaymentGatewayInterface $payment_gateway_plugin */
+    /** @var \Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway\GoCardlessPaymentGatewayInterface $payment_gateway_plugin */
     $payment_gateway_plugin = $this->order->payment_gateway->entity->getPlugin();
 
     /** @var \GoCardlessPro\Client $client */

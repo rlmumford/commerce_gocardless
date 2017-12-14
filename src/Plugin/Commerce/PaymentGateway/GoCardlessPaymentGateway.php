@@ -172,7 +172,7 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
    * Create the payment in GoCardless.
    *
    * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
-   *   The payment entity
+   *   The payment entity.
    * @param $mandate_id
    *   The mandate ID.
    *

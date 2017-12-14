@@ -66,7 +66,7 @@ class WebhookController extends ControllerBase {
   public function webhook(PaymentGatewayInterface $payment_gateway, Request $request) {
     $raw_payload = $request->getContent();
 
-    /** @var GoCardlessPaymentGatewayInterface $payment_gateway_plugin */
+    /** @var \Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway\GoCardlessPaymentGatewayInterface $payment_gateway_plugin */
     $payment_gateway_plugin = $payment_gateway->getPlugin();
     $webhook_secret = $payment_gateway_plugin->getWebhookSecret();
 
@@ -101,7 +101,7 @@ class WebhookController extends ControllerBase {
    * Handle a single mandate event.
    *
    * @param array $event
-   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events
+   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events.
    */
   private function handleMandateEvent($event) {
     $logger = \Drupal::logger('commerce_gocardless');
@@ -130,7 +130,7 @@ class WebhookController extends ControllerBase {
    * Handle a single payment event.
    *
    * @param array $event
-   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events
+   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events.
    */
   private function handlePaymentEvent($event) {
     $gc_payment_id = $event['links']['payment'];
@@ -156,7 +156,7 @@ class WebhookController extends ControllerBase {
       case static::PAYMENT_ACTION_CREATED:
       case static::PAYMENT_ACTION_SUBMITTED:
       case static::PAYMENT_ACTION_PAID_OUT:
-        // not interested in these
+        // Not interested in these.
         break;
 
       case static::PAYMENT_ACTION_CONFIRMED:
@@ -188,10 +188,10 @@ class WebhookController extends ControllerBase {
    *
    * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
    * @param array $event
-   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events
+   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events.
    */
   private function handlePaymentConfirmedEvent(PaymentInterface $payment, $event) {
-    // transitions aren't used by payment API (see commerce_payment.workflows.yml)
+    // Transitions aren't used by payment API (see commerce_payment.workflows.yml)
     $payment->setState('completed');
     $payment->save();
     $this->logger->info('Order #@order_id: payment @gc_payment_id was confirmed.', [
@@ -231,10 +231,10 @@ class WebhookController extends ControllerBase {
    *
    * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
    * @param array $event
-   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events
+   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events.
    */
   private function handlePaymentFailedEvent(PaymentInterface $payment, $event) {
-    // transitions aren't used by payment API (see commerce_payment.workflows.yml)
+    // Transitions aren't used by payment API (see commerce_payment.workflows.yml)
     $payment->setState('voided');
     $payment->save();
     $this->logger->info('Order #@order_id: payment @gc_payment_id failed.', [
@@ -247,7 +247,7 @@ class WebhookController extends ControllerBase {
    * Handle a single subscription event.
    *
    * @param array $event
-   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events
+   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events.
    */
   private function handleSubscriptionEvent($event) {
     $logger = \Drupal::logger('commerce_gocardless');
@@ -269,7 +269,7 @@ class WebhookController extends ControllerBase {
    * Handle an event of unknown type, by logging a warning message.
    *
    * @param array $event
-   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events
+   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events.
    */
   private function handleUnknownEvent($event) {
     $logger = \Drupal::logger('commerce_gocardless');

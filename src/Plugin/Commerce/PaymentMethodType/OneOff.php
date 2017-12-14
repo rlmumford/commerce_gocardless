@@ -24,7 +24,7 @@ class OneOff extends PaymentMethodTypeBase {
    */
   public function buildLabel(PaymentMethodInterface $payment_method) {
     if ($payment_method->getRemoteId()) {
-      /** @var GoCardlessPaymentGatewayInterface $payment_gateway */
+      /** @var \Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway\GoCardlessPaymentGatewayInterface $payment_gateway */
       $payment_gateway = $payment_method->getPaymentGateway()->getPlugin();
       return $this->t('Existing direct debit: @description', [
         '@description' => $payment_gateway->getMandateDescription($payment_method),
