@@ -132,7 +132,10 @@ class GoCardlessMandatePane extends CheckoutPaneBase {
       'country_code' => $profile->address->country_code,
       'email' => $email,
     ];
-    return array_map(function($str) { return $str ? $str : ''; }, $customer);  // send '' instead of NULL
+    return array_map(function ($str) {
+      // Send '' instead of NULL.
+      return $str ? $str : '';
+    }, $customer);
   }
 
 }
