@@ -4,11 +4,17 @@ namespace Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway;
 
 use Drupal\commerce_payment\Entity\PaymentMethodInterface;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OnsitePaymentGatewayInterface;
+use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\SupportsNotificationsInterface;
 
 /**
  * Interface for the GoCardless payment gateway.
+ *
+ * We inherit from SupportsNotificationsInterface, even though we don't (yet!)
+ * make use of the routing and controler that Commerce provides to go with it.
+ * This is in anticipation of this patch to Commerce which will ensure orders
+ * have the validation state: https://www.drupal.org/project/commerce/issues/2930512
  */
-interface GoCardlessPaymentGatewayInterface extends OnsitePaymentGatewayInterface {
+interface GoCardlessPaymentGatewayInterface extends OnsitePaymentGatewayInterface, SupportsNotificationsInterface {
 
   /**
    * Create a new GoCardless client based on this plugin's configuration.
