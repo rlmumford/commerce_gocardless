@@ -14,7 +14,6 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @package Drupal\commerce_gocardless\PluginForm
  */
-
 class GoCardlessPaymentMethodAddForm extends PaymentMethodAddForm {
 
   /**

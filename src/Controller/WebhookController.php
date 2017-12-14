@@ -82,12 +82,15 @@ class WebhookController extends ControllerBase {
         case 'mandates':
           $this->handleMandateEvent($event);
           break;
+
         case 'payments':
           $this->handlePaymentEvent($event);
           break;
+
         case 'subscriptions':
           $this->handleSubscriptionEvent($event);
           break;
+
         default:
           $this->handleUnknownEvent($event);
           break;
@@ -112,16 +115,19 @@ class WebhookController extends ControllerBase {
       case 'created':
         $logger->info('Mandate created: {id}', ['id' => $mandate_id]);
         break;
+
       case 'submitted':
         $logger->info('Mandate submitted: {id}', ['id' => $mandate_id]);
         break;
+
       case 'active':
         $logger->info('Mandate active: {id}', ['id' => $mandate_id]);
         break;
+
       default:
         $logger->info('Message received about mandate {id}. Action is {action}.', [
           'id' => $mandate_id,
-          'action' => $event['action']
+          'action' => $event['action'],
         ]);
     }
   }
@@ -260,7 +266,7 @@ class WebhookController extends ControllerBase {
         $logger->info('Message received about subscription {sid} / payment {pid}. Action is {action}.', [
           'pid' => $payment_id,
           'sid' => $subscription_id,
-          'action' => $event['action']
+          'action' => $event['action'],
         ]);
     }
   }
