@@ -221,6 +221,8 @@ class WebhookController extends ControllerBase {
   private function validateOrder(OrderInterface $order) {
     $transition = $order->getState()->getWorkflow()->getTransition('validate');
     if (!$transition) {
+      // TODO: this check can be removed once https://www.drupal.org/project/commerce/issues/2930512
+      // gets in.
       $this->logger->warning('Unable to update order @order_number because the workflow does not support the "validate" transition.', [
         '@order_number' => $order->getOrderNumber(),
       ]);
