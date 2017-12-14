@@ -12,6 +12,11 @@ This module requires the following modules:
 
  * Commerce (https://drupal.org/project/commerce)
 
+In addition, the following patches are required:
+
+ * https://www.drupal.org/project/commerce/issues/2930500: Add pending states
+   to the payment_default workflow
+
 
 INSTALLATION
 ------------
