@@ -5,6 +5,9 @@ namespace Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway;
 use Drupal\commerce_payment\Entity\PaymentMethodInterface;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OnsitePaymentGatewayInterface;
 
+/**
+ * Interface for the GoCardless payment gateway.
+ */
 interface GoCardlessPaymentGatewayInterface extends OnsitePaymentGatewayInterface {
 
   /**
