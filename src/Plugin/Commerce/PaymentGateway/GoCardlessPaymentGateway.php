@@ -59,12 +59,14 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
     $form['access_token'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Access token'),
+      '#description' => $this->t("The API token supplied by GoCardless."),
       '#default_value' => $this->configuration['access_token'],
       '#required' => TRUE,
     ];
     $form['webhook_secret'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Webhook secret'),
+      '#description' => $this->t("An arbitrary string which GoCardless will use to verify itself when making API requests to this site."),
       '#default_value' => $this->configuration['webhook_secret'],
       '#required' => FALSE,  // you need to get this from GC
     ];
