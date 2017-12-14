@@ -88,7 +88,6 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
    * {@inheritdoc}
    */
   public function createPayment(PaymentInterface $payment, $capture = TRUE) {
-
     $this->assertPaymentState($payment, ['new']);
     $payment_method = $payment->getPaymentMethod();
     $this->assertPaymentMethod($payment_method);
@@ -109,7 +108,7 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
     // The payment won't be approved immediately, so
     $gc_payment_id = $this->createGoCardlessPayment($payment, $mandate_id);
 
-    // We need to be able to identify this payment later, so store the GC id
+    // We need to be able to identify this payment later, so store the GC id.
     $payment->setRemoteId($gc_payment_id);
 
     // Update the payment status to pending - GoCardless will call the webhook
@@ -169,6 +168,17 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
     return isset($this->configuration['webhook_secret']) ? $this->configuration['webhook_secret'] : '';
   }
 
+  /**
+   * Create the payment in GoCardless.
+   *
+   * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
+   *   The payment entity
+   * @param $mandate_id
+   *   The mandate ID.
+   *
+   * @return
+   *   The ID of the GoCardless payment.
+   */
   private function createGoCardlessPayment(PaymentInterface $payment, $mandate_id) {
     /** @var \Drupal\commerce_price\RounderInterface $rounder */
     $rounder = \Drupal::service('commerce_price.rounder');
@@ -176,7 +186,7 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
     $amount = $payment->getAmount();
     $this->assertCurrencyGBP($amount);
     $amount_in_pounds = $rounder->round($payment->getAmount())->getNumber();
-    $amount_in_pence = (int)Calculator::multiply($amount_in_pounds, 100);
+    $amount_in_pence = (int) Calculator::multiply($amount_in_pounds, 100);
 
     // A unique identifier to guard against multiple payment creation requests
     // being made for the same real-world payment.
@@ -193,7 +203,7 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
       ],
       "headers" => [
         "Idempotency-Key" => $idempotency_key,
-      ]
+      ],
     ]);
 
     return $gc_payment->id;
@@ -222,7 +232,9 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
   /**
    * Asserts that the payment amount currency is GBP.
    *
-   * @param Price $price
+   * @param \Drupal\commerce_price\Price $price
+   *   The price.
+   *
    * @throws \InvalidArgumentException
    *   Thrown when the price is not in GBP.
    */
