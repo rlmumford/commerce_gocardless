@@ -17,6 +17,12 @@ In addition, the following patches are required:
  * https://www.drupal.org/project/commerce/issues/2930500: Add pending states
    to the payment_default workflow
 
+The following patches are recommended:
+
+ * https://www.drupal.org/project/commerce/issues/2930512: Do not allow payment
+   gateways that are offsite/use SupportsNotificationsInterface with an order
+   that doesn't have a validation state.
+
 
 INSTALLATION
 ------------
@@ -52,6 +58,10 @@ _Drupal:_
    GoCardless.
 
 8. Make a note of the payment gateway's machine name, we will need this later.
+
+9. Change the default order type to use a workflow that uses validation, or set
+   up a new order type for this and ensure that the GoCaardless payment gateway
+   can only use this order type.
 
 _GoCardless:_
 
