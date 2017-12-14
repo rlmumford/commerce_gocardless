@@ -2,7 +2,6 @@
 
 namespace Drupal\commerce_gocardless\Plugin\Commerce\PaymentMethodType;
 
-use Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway\GoCardlessPaymentGatewayInterface;
 use Drupal\commerce_payment\Entity\PaymentMethodInterface;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentMethodType\PaymentMethodTypeBase;
 

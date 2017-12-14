@@ -4,8 +4,6 @@ namespace Drupal\commerce_gocardless\Plugin\Commerce\CheckoutPane;
 
 use Drupal\commerce\Response\NeedsRedirectException;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutPane\CheckoutPaneBase;
-use Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway\GoCardlessPaymentGatewayInterface;
-use Drupal\commerce_payment\Entity\PaymentMethodInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\profile\Entity\ProfileInterface;

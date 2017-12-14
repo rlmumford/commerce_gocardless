@@ -2,9 +2,7 @@
 
 namespace Drupal\commerce_gocardless\Controller;
 
-use Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway\GoCardlessPaymentGatewayInterface;
 use Drupal\commerce_order\Entity\OrderInterface;
-use Drupal\commerce_payment\Entity\PaymentMethodInterface;
 use Drupal\Core\Controller\ControllerBase;
 use GoCardlessPro\Core\Exception\InvalidApiUsageException;
 use GoCardlessPro\Core\Exception\InvalidStateException;
