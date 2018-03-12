@@ -63,8 +63,8 @@ class MandateConfirmationController extends ControllerBase {
       /** @var \Drupal\commerce_payment\Entity\PaymentMethodInterface $payment_method */
       $payment_method = $commerce_order->payment_method->entity;
       $payment_method->setRemoteId($mandate_id);
-      // Workaround for https://www.drupal.org/node/2882136 - for now we must have an expires time.
-      $payment_method->setExpiresTime(strtotime('now + 10 years'));
+      // The payment method doesn't need an expiry.
+
       $payment_method->save();
 
     }
