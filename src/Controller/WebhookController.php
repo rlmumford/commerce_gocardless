@@ -142,9 +142,7 @@ class WebhookController extends ControllerBase {
     $gc_payment_id = $event['links']['payment'];
     $action = $event['action'];
 
-    /** @var \Drupal\commerce_payment\PaymentStorageInterface $paymentStorage */
-    $paymentStorage = \Drupal::entityTypeManager()->getStorage('commerce_payment');
-    $payment = $paymentStorage->loadPaymentByRemoteId($gc_payment_id);
+    $payment = $this->paymentStorage->loadByRemoteId($gc_payment_id);
 
     // If we don't know anything about the payment ignore this event but
     // leave a warning message in the log.
