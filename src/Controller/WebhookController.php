@@ -68,12 +68,13 @@ class WebhookController extends ControllerBase {
 
     /** @var \Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway\GoCardlessPaymentGatewayInterface $payment_gateway_plugin */
     $payment_gateway_plugin = $payment_gateway->getPlugin();
+    $payment_gateway_id = $payment_gateway->id();
     $webhook_secret = $payment_gateway_plugin->getWebhookSecret();
 
     $provided_signature = $request->headers->get('Webhook-Signature');
     $calculated_signature = hash_hmac("sha256", $raw_payload, $webhook_secret);
     if ($provided_signature !== $calculated_signature) {
-      return new Response('Provided signature does not match calculated signature', 498);
+      return new Response("Provided signature does not match calculated signature for payment gateway {$payment_gateway_id}.", 498);
     }
 
     $object = Json::decode($raw_payload);
@@ -97,7 +98,7 @@ class WebhookController extends ControllerBase {
       }
     }
 
-    return new Response('Drupal received the data ok', 200);
+    return new Response("Drupal received the data ok with payment gateway {$payment_gateway_id}.", 200);
   }
 
   /**
