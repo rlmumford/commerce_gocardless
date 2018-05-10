@@ -18,12 +18,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class WebhookController extends ControllerBase {
 
-  const PAYMENT_ACTION_CREATED = 'created';
-  const PAYMENT_ACTION_SUBMITTED = 'submitted';
-  const PAYMENT_ACTION_CONFIRMED = 'confirmed';
-  const PAYMENT_ACTION_FAILED = 'failed';
-  const PAYMENT_ACTION_PAID_OUT = 'paid_out';
-
   /**
    * @var \Drupal\commerce_payment\PaymentStorageInterface
    */
@@ -158,17 +152,17 @@ class WebhookController extends ControllerBase {
     }
 
     switch ($event['action']) {
-      case static::PAYMENT_ACTION_CREATED:
-      case static::PAYMENT_ACTION_SUBMITTED:
-      case static::PAYMENT_ACTION_PAID_OUT:
+      case 'created':
+      case 'submitted':
+      case 'paid_out':
         // Not interested in these.
         break;
 
-      case static::PAYMENT_ACTION_CONFIRMED:
+      case 'confirmed':
         $this->handlePaymentConfirmedEvent($payment, $event);
         break;
 
-      case static::PAYMENT_ACTION_FAILED:
+      case 'failed':
         $this->handlePaymentFailedEvent($payment, $event);
         break;
 
