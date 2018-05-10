@@ -158,12 +158,33 @@ class WebhookController extends ControllerBase {
         // Not interested in these.
         break;
 
+      case 'customer_approval_granted':
+      case 'customer_approval_denied':
+        // Assuming that these events are followed by a 'confirmed' or 'failed'
+        // event, so we don't need to handle them.
+        break;
+
+      case 'chargeback_cancelled':
+      case 'late_failure_settled':
+      case 'chargeback_settled':
+      case 'resubmission_requested':
+        // Probably not interested in these, but more research might be needed.
+        break;
+
       case 'confirmed':
         $this->handlePaymentConfirmedEvent($payment, $event);
         break;
 
+      case 'charged_back':
+        $this->handlePaymentChargedBackEvent($payment, $event);
+        break;
+
       case 'failed':
         $this->handlePaymentFailedEvent($payment, $event);
+        break;
+
+      case 'cancelled':
+        $this->handlePaymentCancelledEvent($payment, $event);
         break;
 
       default:
@@ -226,6 +247,26 @@ class WebhookController extends ControllerBase {
   }
 
   /**
+   * Handle a payment charged back event.
+   *
+   * Changes the payment state to refunded.
+   *
+   * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
+   *   The payment entity.
+   * @param array $event
+   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events.
+   */
+  private function handlePaymentChargedBackEvent(PaymentInterface $payment, $event) {
+    // Transitions aren't used by payment API (see commerce_payment.workflows.yml)
+    $payment->setState('refunded');
+    $payment->save();
+    $this->logger->info('Order #@order_id: payment @gc_payment_id charged back.', [
+      '@gc_payment_id' => $payment->getRemoteId(),
+      '@order_id' => $payment->getOrderId(),
+    ]);
+  }
+
+  /**
    * Handle a payment failed event.
    *
    * Changes the payment state to voided.
@@ -243,6 +284,27 @@ class WebhookController extends ControllerBase {
     $payment->setState('authorization_voided');
     $payment->save();
     $this->logger->info('Order #@order_id: payment @gc_payment_id failed.', [
+      '@gc_payment_id' => $payment->getRemoteId(),
+      '@order_id' => $payment->getOrderId(),
+    ]);
+  }
+
+  /**
+   * Handle a payment cancelled event.
+   *
+   * Changes the payment state to authorization_voided, for lack of anything
+   * more suitable.
+   *
+   * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
+   *   The payment entity.
+   * @param array $event
+   *   Event details, see https://developer.gocardless.com/api-reference/#core-endpoints-events.
+   */
+  private function handlePaymentCancelledEvent(PaymentInterface $payment, $event) {
+    // Transitions aren't used by payment API (see commerce_payment.workflows.yml)
+    $payment->setState('authorization_voided');
+    $payment->save();
+    $this->logger->info('Order #@order_id: payment @gc_payment_id cancelled.', [
       '@gc_payment_id' => $payment->getRemoteId(),
       '@order_id' => $payment->getOrderId(),
     ]);
