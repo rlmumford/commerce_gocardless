@@ -224,7 +224,14 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
   public function getMandateDescription(PaymentMethodInterface $payment_method) {
     if ($payment_method->getRemoteId()) {
       $client = $this->createGoCardlessClient();
-      $mandate = $client->mandates()->get($payment_method->getRemoteId());
+
+      try {
+        $mandate = $client->mandates()->get($payment_method->getRemoteId());
+      }
+      catch (GoCardlessProException $e) {
+        return $this->t('Invalid debit mandate');
+      }
+
       $bank_account_ref = $mandate->links->customer_bank_account;
       if ($bank_account_ref) {
         $bank_account = $client->customerBankAccounts()->get($bank_account_ref);
