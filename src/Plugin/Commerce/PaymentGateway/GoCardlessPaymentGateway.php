@@ -5,11 +5,13 @@ namespace Drupal\commerce_gocardless\Plugin\Commerce\PaymentGateway;
 use Drupal\commerce_payment\Entity\PaymentInterface;
 use Drupal\commerce_payment\Entity\PaymentMethodInterface;
 use Drupal\commerce_payment\Exception\HardDeclineException;
+use Drupal\commerce_payment\Exception\PaymentGatewayException;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OnsitePaymentGatewayBase;
 use Drupal\commerce_price\Calculator;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Form\FormStateInterface;
 use GoCardlessPro\Client;
+use GoCardlessPro\Core\Exception\GoCardlessProException;
 
 /**
  * GoCardless payment gateway.
@@ -108,7 +110,12 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
 
     // Create a payment on GoCardless.
     // The payment won't be approved immediately, so
-    $gc_payment_id = $this->createGoCardlessPayment($payment, $mandate_id);
+    try {
+      $gc_payment_id = $this->createGoCardlessPayment($payment, $mandate_id);
+    }
+    catch (GoCardlessProException $e) {
+      throw new PaymentGatewayException($e->getMessage());
+    }
 
     // We need to be able to identify this payment later, so store the GC id.
     $payment->setRemoteId($gc_payment_id);
