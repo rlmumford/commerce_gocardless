@@ -114,7 +114,7 @@ class GoCardlessPaymentGateway extends OnsitePaymentGatewayBase {
       $gc_payment_id = $this->createGoCardlessPayment($payment, $mandate_id);
     }
     catch (GoCardlessProException $e) {
-      throw new PaymentGatewayException($e->getMessage());
+      throw new PaymentGatewayException('GoGardless exception: ' . $e->getMessage());
     }
 
     // We need to be able to identify this payment later, so store the GC id.
