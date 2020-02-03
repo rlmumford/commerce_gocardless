@@ -1,0 +1,30 @@
+<?php
+
+use Drupal\commerce_gocardless\Entity\Mandate;
+use Drupal\commerce_gocardless\Entity\MandateAccessControlHandler;
+use Drupal\Core\Entity\ContentEntityType;
+use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
+
+/**
+ * Install the mandate entity type.
+ */
+function commerce_gocardless_update_8001() {
+  \Drupal::entityDefinitionUpdateManager()->installEntityType(new ContentEntityType([
+    'class' => Mandate::class,
+    'id' => "gocardless_mandate",
+    'label' => new TranslatableMarkup("Mandate"),
+    'base_table' => "gocardless_mandate",
+    'revision_table' => "gocardless_mandate_revision",
+    'admin_permission' => "administer mandates",
+    'handlers' => [
+      'storage' => SqlContentEntityStorage::class,
+      'access' => MandateAccessControlHandler::class,
+    ],
+    'entity_keys' => [
+      "id" => "id",
+      "revision" => "vid",
+      "uuid" => "uuid",
+      "owner" => "owner",
+    ]
+  ]));
+}
