@@ -3,7 +3,7 @@
 namespace Drupal\commerce_gocardless\Event;
 
 use Drupal\commerce_order\Entity\Order;
-use Drupal\commerce_payment\Entity\PaymentGatewayInterface;
+use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\PaymentGatewayInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 class CheckoutPaymentsEvent extends Event {
@@ -33,7 +33,7 @@ class CheckoutPaymentsEvent extends Event {
    * CheckoutPaymentsEvent constructor.
    *
    * @param \Drupal\commerce_order\Entity\Order $order
-   * @param \Drupal\commerce_payment\Entity\PaymentGatewayInterface $plugin
+   * @param \Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\PaymentGatewayInterface $plugin
    * @param array $payments
    */
   public function __construct(Order $order, PaymentGatewayInterface $plugin, array $payments) {

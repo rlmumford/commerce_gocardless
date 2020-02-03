@@ -10,7 +10,7 @@ use Drupal\commerce_payment\PaymentTypeManager;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayBase;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use GoCardlessPro\Client;
+use GoCardlessPro\Core\Exception\InvalidStateException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @CommercePaymentGateway(
  *   id = "gocardless_redirect",
- *   label = "GoCardless Redirect Flor",
+ *   label = "GoCardless Redirect Flow",
  *   display_label = "GoCardless",
  *   forms = {
  *     "offsite-payment" = "Drupal\commerce_gocardless\PluginForm\GoCardlessOffsitePaymentForm",
@@ -97,13 +97,19 @@ class GoCardlessRedirectFlow extends OffsitePaymentGatewayBase {
     // Complete the redirect flow.
     $flow_id = $request->query->get('redirect_flow_id');
     $client = $this->createGoCardlessClient();
-    $flow = $client->redirectFlows()->complete($flow_id, [
-      'params' => [
-        'session_token' => \Drupal::service('session')->getId(),
-      ],
-    ]);
+    try {
+      $flow = $client->redirectFlows()->complete($flow_id, [
+        'params' => [
+          'session_token' => \Drupal::service('session')->getId(),
+        ],
+      ]);
+    }
+    catch (InvalidStateException $exception) {
+      // If we've already completed the flow just try and load it.
+      $flow = $client->redirectFlows()->get($flow_id);
+    }
 
-    $mandate_id = $flow->links['mandate'];
+    $mandate_id = $flow->links->mandate;
     $mandate_info = $client->mandates()->get($mandate_id);
 
     $mandate_storage = $this->entityTypeManager->getStorage('gocardless_mandate');
@@ -113,7 +119,7 @@ class GoCardlessRedirectFlow extends OffsitePaymentGatewayBase {
       'gc_mandate_id' => $mandate_id,
       'gc_mandate_scheme' => $mandate_info->scheme,
       'gc_mandate_status' => $mandate_info->status,
-      'gc_customer_id' => $flow->links['customer'],
+      'gc_customer_id' => $flow->links->customer,
       'sandbox' => $this->getMode() === 'sandbox',
     ]);
     $mandate->save();
@@ -131,7 +137,7 @@ class GoCardlessRedirectFlow extends OffsitePaymentGatewayBase {
 
     foreach ($event->getPayments() as $required_payment) {
       $required_payment += [
-        'metadata' => [],
+        'metadata' => (object) [],
         'idempotency_key' => NULL,
       ];
 
@@ -162,7 +168,7 @@ class GoCardlessRedirectFlow extends OffsitePaymentGatewayBase {
         'payment_gateway' => $this->parentEntity->id(),
         'order_id' => $order->id(),
         'remote_id' => $gc_payment->id,
-        'remote_state' => $gc_payment->state,
+        'remote_state' => $gc_payment->status,
       ])->save();
     }
   }

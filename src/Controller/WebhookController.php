@@ -2,6 +2,8 @@
 
 namespace Drupal\commerce_gocardless\Controller;
 
+use Drupal\commerce_gocardless\Event\CommerceGoCardlessEvents;
+use Drupal\commerce_gocardless\Event\PaymentWebhookEvent;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_payment\Entity\PaymentGatewayInterface;
 use Drupal\commerce_payment\Entity\PaymentInterface;
@@ -10,6 +12,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -29,14 +32,20 @@ class WebhookController extends ControllerBase {
   protected $logger;
 
   /**
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   */
+  protected $eventDispatcher;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\commerce_payment\PaymentStorageInterface $payment_storage
    * @param \Drupal\Core\Logger\LoggerChannelInterface $logger
    */
-  public function __construct(PaymentStorageInterface $payment_storage, LoggerChannelInterface $logger) {
+  public function __construct(PaymentStorageInterface $payment_storage, LoggerChannelInterface $logger, EventDispatcherInterface $event_dispatcher) {
     $this->paymentStorage = $payment_storage;
     $this->logger = $logger;
+    $this->eventDispatcher = $event_dispatcher;
   }
 
   /**
@@ -45,7 +54,8 @@ class WebhookController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager')->getStorage('commerce_payment'),
-      $container->get('logger.factory')->get('commerce_gocardless')
+      $container->get('logger.factory')->get('commerce_gocardless'),
+      $container->get('event_dispatcher')
     );
   }
 
@@ -198,6 +208,11 @@ class WebhookController extends ControllerBase {
         ]);
         return;
     }
+
+    $this->eventDispatcher->dispatch(
+      CommerceGoCardlessEvents::_PAYMENT_PREFIX.$event['action'],
+      new PaymentWebhookEvent($payment, $event)
+    );
   }
 
   /**

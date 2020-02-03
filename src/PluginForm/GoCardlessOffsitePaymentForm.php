@@ -29,7 +29,7 @@ class GoCardlessOffsitePaymentForm extends PaymentOffsiteForm {
       'params' => [
         'description' => "Order {$order->getOrderNumber()}",
         'session_token' => $session->getId(),
-        'session_redirect_url' => $form['#return_url'],
+        'success_redirect_url' => $form['#return_url'],
         'prefilled_customer' => [
           'given_name' => $profile->address->given_name,
           'family_name' => $profile->address->family_name,
