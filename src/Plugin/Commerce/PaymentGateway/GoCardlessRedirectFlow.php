@@ -126,7 +126,7 @@ class GoCardlessRedirectFlow extends OffsitePaymentGatewayBase {
 
     $required_payments = [
       [
-        'type' => 'payments',
+        'type' => 'payment',
         'price' => $order->getTotalPrice(),
         'description' => "Payment for ".$order->getOrderNumber(),
         'idempotency_key' => 'payment-for-order-'.$order->id(),
