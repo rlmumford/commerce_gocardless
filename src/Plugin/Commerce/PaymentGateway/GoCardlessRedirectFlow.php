@@ -126,6 +126,7 @@ class GoCardlessRedirectFlow extends OffsitePaymentGatewayBase {
 
     $required_payments = [
       [
+        'type' => 'payments',
         'price' => $order->getTotalPrice(),
         'description' => "Payment for ".$order->getOrderNumber(),
         'idempotency_key' => 'payment-for-order-'.$order->id(),
@@ -137,6 +138,7 @@ class GoCardlessRedirectFlow extends OffsitePaymentGatewayBase {
 
     foreach ($event->getPayments() as $required_payment) {
       $required_payment += [
+        'type' => 'payment',
         'metadata' => (object) [],
         'idempotency_key' => NULL,
       ];
@@ -148,28 +150,77 @@ class GoCardlessRedirectFlow extends OffsitePaymentGatewayBase {
 
       /** @var \Drupal\commerce_price\Price $price */
       $price = $required_payment['price'];
-      $gc_payment = $client->payments()->create([
-        'params' => [
-          'amount' => $this->toMinorUnits($price),
-          'currency' => $price->getCurrencyCode(),
-          'description' => $required_payment['description'],
-          'metadata' => $required_payment['metadata'],
-          'links' => [
-            'mandate' => $mandate_id,
-          ],
-        ],
-        'headers' => $headers,
-      ]);
 
-      $payment_storage = $this->entityTypeManager->getStorage('commerce_payment');
-      $payment_storage->create([
-        'state' => 'pending_capture',
-        'amount' => $price,
-        'payment_gateway' => $this->parentEntity->id(),
-        'order_id' => $order->id(),
-        'remote_id' => $gc_payment->id,
-        'remote_state' => $gc_payment->status,
-      ])->save();
+      switch ($required_payment['type']) {
+        case 'payment':
+          $gc_payment = $client->payments()->create([
+            'params' => [
+              'amount' => $this->toMinorUnits($price),
+              'currency' => $price->getCurrencyCode(),
+              'description' => $required_payment['description'],
+              'metadata' => $required_payment['metadata'],
+              'links' => [
+                'mandate' => $mandate_id,
+              ],
+            ],
+            'headers' => $headers,
+          ]);
+
+          $payment_storage = $this->entityTypeManager->getStorage('commerce_payment');
+          $payment_storage->create([
+            'state' => 'pending_capture',
+            'amount' => $price,
+            'payment_gateway' => $this->parentEntity->id(),
+            'order_id' => $order->id(),
+            'remote_id' => $gc_payment->id,
+            'remote_state' => $gc_payment->status,
+          ])->save();
+          break;
+        case 'instalment_schedule':
+          $required_payment['metadata']->order = $order->id();
+
+          $gc_schedule = $client->instalmentSchedules()->create([
+            'params' => [
+              'amount' => $this->toMinorUnits($price),
+              'currency_code' => $price->getCurrencyCode(),
+              'name' => $required_payment['name'],
+              'schedule' => $required_payment['schedule'],
+              'metadata' => $required_payment['metadata'],
+              'links' => [
+                'mandate' => $mandate_id,
+              ],
+            ],
+            'headers' => $headers,
+          ]);
+
+          $gc_schedule = $client->instalmentSchedules()->get($gc_schedule->id);
+          if ($gc_schedule->status === 'active') {
+            foreach ($gc_schedule->links->payments as $payment_id) {
+              $gc_payment = $client->payments()->get($payment_id);
+
+              $payment_storage = $this->entityTypeManager->getStorage('commerce_payment');
+              $payment_storage->create([
+                'state' => 'pending_capture',
+                'amount' => new Price((string) ($gc_payment/100), $price->getCurrencyCode()),
+                'payment_gateway' => $this->parentEntity->id(),
+                'order_id' => $order->id(),
+                'remote_id' => $gc_payment->id,
+                'remote_state' => $gc_payment->status,
+              ])->save();
+            }
+          }
+          else {
+            // Queue up the creation of scheduled payments.
+            \Drupal::queue('commerce_gocardless_installment_schedule')->createItem([
+              'payment_gateway' => $this->parentEntity,
+              'order' => $order,
+              'schedule' => $gc_schedule,
+            ]);
+          }
+
+          break;
+      }
+
     }
   }
 }
