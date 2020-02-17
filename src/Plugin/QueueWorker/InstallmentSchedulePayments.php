@@ -88,17 +88,20 @@ class InstallmentSchedulePayments extends QueueWorkerBase implements ContainerFa
     /** @var \GoCardlessPro\Resources\InstalmentSchedule $schedule */
     $schedule = $data['schedule'];
 
+    dpm($data);
     $client = $payment_gateway_plugin->createGoCardlessClient();
     $schedule = $client->instalmentSchedules()->get($schedule->id);
+    dpm($schedule, 'schedule');
 
-    if ($schedule->status !== 'active') {
+    if ($schedule->status === 'active') {
       foreach ($schedule->links->payments as $payment_id) {
         $gc_payment = $client->payments()->get($payment_id);
+        dpm($gc_payment);
 
         $payment_storage = $this->entityTypeManager->getStorage('commerce_payment');
         $payment_storage->create([
           'state' => 'pending_capture',
-          'amount' => new Price((string) ($gc_payment/100), $order->getTotalPrice()->getCurrencyCode()),
+          'amount' => new Price((string) ($gc_payment->amount/100), $order->getTotalPrice()->getCurrencyCode()),
           'payment_gateway' => $payment_gateway->id(),
           'order_id' => $order->id(),
           'remote_id' => $gc_payment->id,
