@@ -39,6 +39,10 @@ class GoCardlessMandatePane extends CheckoutPaneBase {
       $this->redirectToPreviousStep();
     }
 
+    if ($this->order->getBalance()->isZero()) {
+      return $pane_form;
+    }
+
     /** @var \Drupal\commerce_payment\Entity\PaymentMethodInterface $payment_method */
     $payment_method = $this->order->payment_method->entity;
 
