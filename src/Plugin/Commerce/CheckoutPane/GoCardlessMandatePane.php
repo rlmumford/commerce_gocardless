@@ -33,14 +33,14 @@ class GoCardlessMandatePane extends CheckoutPaneBase {
    * {@inheritdoc}
    */
   public function buildPaneForm(array $pane_form, FormStateInterface $form_state, array &$complete_form) {
+    if ($this->order->getBalance()->isZero()) {
+      return $pane_form;
+    }
+
     // A payment gateway must be set before this pane is used.
     if ($this->order->get('payment_gateway')->isEmpty()) {
       drupal_set_message($this->t('No payment gateway selected.'), 'error');
       $this->redirectToPreviousStep();
-    }
-
-    if ($this->order->getBalance()->isZero()) {
-      return $pane_form;
     }
 
     /** @var \Drupal\commerce_payment\Entity\PaymentMethodInterface $payment_method */
